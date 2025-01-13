@@ -13,6 +13,8 @@ public interface EvenementDAO {
     // Lire tous les événements
     List<Evenement> getAllEvenements() throws Exception;
 
+    List<Evenement> getUpcomingEvenements() throws Exception;
+
     // Mettre à jour un événement
     void updateEvenement(Evenement evenement) throws Exception;
 

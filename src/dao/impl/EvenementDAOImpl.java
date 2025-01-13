@@ -19,7 +19,7 @@ public class EvenementDAOImpl implements EvenementDAO {
     @Override
     public void createEvenement(Evenement evenement) throws Exception {
         // Étape 1: Créer l'événement dans la base de données
-        String query = "INSERT INTO evenement (titre, description, date, lieu, capacite, prix, utilisateur_id) " +
+        String query = "INSERT INTO evenement (titre, description, date, lieu, capacite, prix, organisateur_id) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, evenement.getTitre());
@@ -91,7 +91,7 @@ public class EvenementDAOImpl implements EvenementDAO {
                         rs.getString("lieu"),
                         rs.getInt("capacite"),
                         rs.getFloat("prix"),
-                        rs.getInt("utilisateur_id")
+                        rs.getInt("organisateur_id")
                     );
                 }
             }
@@ -114,11 +114,38 @@ public class EvenementDAOImpl implements EvenementDAO {
                     rs.getString("lieu"),
                     rs.getInt("capacite"),
                     rs.getFloat("prix"),
-                    rs.getInt("utilisateur_id")
+                    rs.getInt("organisateur_id")
                 ));
             }
         }
         return evenements;
+    }
+ @Override
+    public List<Evenement> getUpcomingEvenements() throws Exception {
+        List<Evenement> upcomingEvenements = new ArrayList<>();
+        String query = "SELECT * FROM evenement WHERE date >= ?";
+        
+        // Obtenir la date actuelle
+        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setDate(1, currentDate);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    upcomingEvenements.add(new Evenement(
+                        rs.getInt("id"),
+                        rs.getString("titre"),
+                        rs.getString("description"),
+                        rs.getDate("date"),
+                        rs.getString("lieu"),
+                        rs.getInt("capacite"),
+                        rs.getFloat("prix"),
+                        rs.getInt("organisateur_id")
+                    ));
+                }
+            }
+        }
+        return upcomingEvenements;
     }
 
     @Override
@@ -207,7 +234,7 @@ public class EvenementDAOImpl implements EvenementDAO {
     @Override
     public List<Evenement> getEvenementsByOrganisateurId(int organisateurId) throws Exception {
         List<Evenement> evenements = new ArrayList<>();
-        String query = "SELECT * FROM evenement WHERE utilisateur_id = ?";
+        String query = "SELECT * FROM evenement WHERE organisateur_id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, organisateurId);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -220,7 +247,7 @@ public class EvenementDAOImpl implements EvenementDAO {
                         rs.getString("lieu"),
                         rs.getInt("capacite"),
                         rs.getFloat("prix"),
-                        rs.getInt("utilisateur_id")
+                        rs.getInt("organisateur_id")
                     ));
                 }
             }

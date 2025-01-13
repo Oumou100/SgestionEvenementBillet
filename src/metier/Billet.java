@@ -25,7 +25,11 @@ public class Billet {
     }
 
 
-
+    public Billet(int i, String ticketCode, String eventTitle, String participantName, float eventPrice, String string,
+			int participantId2, int eventId) {
+		// TODO Auto-generated constructor stub
+	}
+    
     public int getId() {
 		return id;
 	}

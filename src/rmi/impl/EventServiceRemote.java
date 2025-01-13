@@ -86,6 +86,16 @@ public class EventServiceRemote extends UnicastRemoteObject implements IEventSer
             return null;
         }
     }
+    @Override
+    public List<Evenement> getUpcomingEvents() throws RemoteException {
+        try {
+            // Utiliser le DAO pour récupérer les événements à venir
+            return evenementDAO.getUpcomingEvenements();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public Evenement getEventDetails(int eventId) throws RemoteException {

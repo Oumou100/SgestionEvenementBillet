@@ -9,6 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceRemote extends UnicastRemoteObject implements IUserServiceRemote {
@@ -107,6 +108,46 @@ public class UserServiceRemote extends UnicastRemoteObject implements IUserServi
     }
 
     @Override
+	public boolean updateNameUser(int id_user,String newName) throws Exception {
+		boolean t=false;
+		if(utilisateurDAO.updateNameUser(id_user, newName));
+		t=true;
+		return t;
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean updateEmailUser(int id_user,String newEmail) throws Exception {
+		boolean t=false;
+		if(utilisateurDAO.updateEmailUser(id_user, newEmail));
+		t=true;
+		return t;
+		
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean updatePasswordUser(int id_user,String newPwd) throws Exception {
+		boolean t=false;
+		if(utilisateurDAO.updatePasswordUser(id_user, newPwd));
+		t=true;
+		return t;
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean updateRoleUser(int id_user,String newRole) throws Exception {
+		boolean t=false;
+		if(utilisateurDAO.updateRoleUser(id_user, newRole));
+		t=true;
+		return t;
+		// TODO Auto-generated method stub
+		
+	}
+    @Override
     public Utilisateur getUserDetails(int userId) throws RemoteException {
         try {
             // Récupérer l'utilisateur via DAO
@@ -165,6 +206,33 @@ public class UserServiceRemote extends UnicastRemoteObject implements IUserServi
             return false;
         }
     }
+    
+	@Override
+	public boolean acheterBillet(int id_user, int id_billet) throws RemoteException {
+		// TODO Auto-generated method stub
+		boolean t=false;
+		if(utilisateurDAO.acheterBillet(id_user, id_billet))
+			t=true;
+		return t;
+	}
+
+	@Override
+	public List<String> mesAchats(int id_user)throws Exception {
+		// TODO Auto-generated method stub
+		List<String> list= new ArrayList<String>();
+		list=utilisateurDAO.mesAchats(id_user);
+		return list;
+	}
+
+	@Override
+	public List<String> mesEvenement(int id_user)throws Exception {
+		// TODO Auto-generated method stub
+		List<String> list=new ArrayList<String>();
+				list=utilisateurDAO.mesEvenement(id_user);
+		for(String l:list)
+			System.out.println(l);
+		return list;
+	}
     
     public static String hashPassword(String password) {
         try {

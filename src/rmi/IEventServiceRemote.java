@@ -15,6 +15,8 @@ public interface IEventServiceRemote extends Remote {
     // Récupérer la liste des événements disponibles
     List<Evenement> getAllEvents() throws RemoteException;  // Retourne une liste d'objets Evenement
 
+    List<Evenement> getUpcomingEvents() throws RemoteException;
+
     // Obtenir les détails d’un événement spécifique
     Evenement getEventDetails(int eventId) throws RemoteException;  // Retourne un objet Evenement
 

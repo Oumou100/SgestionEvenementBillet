@@ -3,12 +3,14 @@ package dao.impl;
 import dao.BilletDAO;
 import metier.Billet;
 
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BilletDAOImpl implements BilletDAO {
     private final Connection connection;
+	
 
     // Constructeur avec connexion
     public BilletDAOImpl(Connection connection) {
@@ -21,22 +23,42 @@ public class BilletDAOImpl implements BilletDAO {
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, billet.getCode());  // Le code QR du billet
-            pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));  // Date d'émission actuelle
+            pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));  // Date d'ï¿½mission actuelle
             pstmt.setFloat(3, billet.getPrix());   // Prix du billet
             pstmt.setString(4, billet.getStatut()); // Statut initial du billet (ex : "disponible")
             
-            // Si le billet est généré sans participant, on laisse le participant_id à 0
-            pstmt.setInt(5, billet.getParticipantId()); // Participant ID (0 si non attribué)
+            // Si le billet est gï¿½nï¿½rï¿½ sans participant, on laisse le participant_id ï¿½ 0
+            pstmt.setInt(5, billet.getParticipantId()); // Participant ID (0 si non attribuï¿½)
             
-            pstmt.setInt(6, billet.getEvenementId());  // ID de l'événement pour lequel le billet est créé
-            pstmt.setBoolean(7, billet.isTicketAreGenerated()); // Définir si les billets sont générés (true/false)
+            pstmt.setInt(6, billet.getEvenementId());  // ID de l'ï¿½vï¿½nement pour lequel le billet est crï¿½ï¿½
+            pstmt.setBoolean(7, billet.isTicketAreGenerated()); // Dï¿½finir si les billets sont gï¿½nï¿½rï¿½s (true/false)
             
-            pstmt.executeUpdate();  // Exécution de l'insertion dans la base
+            pstmt.executeUpdate();  // Exï¿½cution de l'insertion dans la base
         }
     }
+
+	@Override
+	public List<String> getTicketsbyEvenement(int id_evenement) throws RemoteException {
+		List<String> listBillets=new ArrayList<String>();
+		String query="select * from billet where evenement_id = ?";
+		try{
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			pstmt.setInt(1, id_evenement);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				listBillets.add("[ numero:"+rs.getInt("id")+" Code_QR:"+rs.getString("code_qr")+" prix:"+rs.getInt("prix")+" statut:"+rs.getString("statut")+" ]");
+			}
+			
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return listBillets;
+	}
     
     
-/*
+
 
     @Override
     public Billet getBilletById(int id) throws Exception {
@@ -62,7 +84,7 @@ public class BilletDAOImpl implements BilletDAO {
                 }
             }
         }
-        return null; // Aucun billet trouvé
+        return null; // Aucun billet trouvï¿½
     }
 
     @Override
@@ -95,8 +117,8 @@ public class BilletDAOImpl implements BilletDAO {
         String query = "UPDATE billet SET code_qr = ?, prix = ?, statut = ? WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, billet.getCode());
-            pstmt.setFloat(2, billet.getPrix());    // Mise à jour du prix
-            pstmt.setString(3, billet.getStatut()); // Mise à jour du statut
+            pstmt.setFloat(2, billet.getPrix());    // Mise ï¿½ jour du prix
+            pstmt.setString(3, billet.getStatut()); // Mise ï¿½ jour du statut
             pstmt.setInt(4, billet.getId());
             pstmt.executeUpdate();
         }
@@ -137,5 +159,23 @@ public class BilletDAOImpl implements BilletDAO {
             }
         }
         return tickets;
-    }*/
+    }
+
+	@Override
+	public boolean deleteTikectbyId(int id_billet) throws Exception {
+		// TODO Auto-generated method stub
+		boolean t=false;
+		String query1 = "update  billet set statut = ?, participant_id = NULL WHERE id = ?";
+		String query2 = "update  evenement set capacite = capacite + 1 WHERE id = (select evenement_id from billet where id = ?)";
+		PreparedStatement pst1 = connection.prepareStatement(query1);
+		pst1.setString(1, "disponible");
+		pst1.setInt(2, id_billet);
+		if(pst1.executeUpdate()!=0) {
+			PreparedStatement pst2 = connection.prepareStatement(query2);
+			pst2.setInt(1, id_billet);
+			if(pst2.executeUpdate()!=0)
+				t=true;
+		}
+		return t;
+	}
 }

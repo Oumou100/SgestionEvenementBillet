@@ -15,19 +15,19 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
 
     // Constructeur
     public TicketServiceRemote(BilletDAO billetDAO) throws RemoteException {
-        super();
+        
         this.billetDAO = billetDAO;
     }
 
     @Override
     public boolean generateTicket(int participantId, int eventId) throws RemoteException {
         try {
-            // Génération d'un code QR unique pour le billet
+            // Gï¿½nï¿½ration d'un code QR unique pour le billet
             String ticketCode = generateUniqueCode();
-            // On récupère l'événement et le prix associé
+            // On rï¿½cupï¿½re l'ï¿½vï¿½nement et le prix associï¿½
             float eventPrice = getEventPrice(eventId);
 
-            // Créer le billet
+            // Crï¿½er le billet
             Billet billet = new Billet(0, ticketCode, getEventTitle(eventId), getParticipantName(participantId), eventPrice, "valide", participantId, eventId);
             billetDAO.createBillet(billet);
 
@@ -41,19 +41,19 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
     @Override
     public boolean updateTicket(String ticketCode, int newEventId, int newParticipantId) throws RemoteException {
         try {
-            // Récupérer le billet existant par son code QR
+            // Rï¿½cupï¿½rer le billet existant par son code QR
             Billet billet = getBilletByCode(ticketCode);
             if (billet == null) {
                 return false; // Le billet n'existe pas
             }
 
-            // Mettre à jour les informations du billet
+            // Mettre ï¿½ jour les informations du billet
             billet.setEvenementId(newEventId);
             billet.setParticipantId(newParticipantId);
-            billet.setEventTitle(getEventTitle(newEventId));
+            billet.setParticipantId(newParticipantId);
             billet.setPrix(getEventPrice(newEventId));
 
-            // Sauvegarder les modifications dans la base de données
+            // Sauvegarder les modifications dans la base de donnï¿½es
             billetDAO.updateBillet(billet);
             return true;
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
             // Obtenir tous les billets pour un participant
             return billetDAO.getTicketsForParticipant(participantId);
         } catch (SQLException e) {
-            // Exception spécifique liée à la base de données
+            // Exception spï¿½cifique liï¿½e ï¿½ la base de donnï¿½es
             e.printStackTrace();
             return new ArrayList<>();  // Return an empty list in case of an exception
         } catch (Exception e) {
@@ -82,10 +82,10 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
     @Override
     public boolean validateTicket(String ticketCode) throws RemoteException {
         try {
-            // Récupérer le billet par son code QR
+            // Rï¿½cupï¿½rer le billet par son code QR
             Billet billet = getBilletByCode(ticketCode);
             if (billet == null || billet.getStatut().equals("valide")) {
-                return false; // Le billet est déjà valide ou n'existe pas
+                return false; // Le billet est dï¿½jï¿½ valide ou n'existe pas
             }
 
             // Valider le billet
@@ -101,10 +101,10 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
     @Override
     public boolean cancelTicket(String ticketCode) throws RemoteException {
         try {
-            // Récupérer le billet par son code QR
+            // Rï¿½cupï¿½rer le billet par son code QR
             Billet billet = getBilletByCode(ticketCode);
             if (billet == null || billet.getStatut().equals("annule")) {
-                return false; // Le billet est déjà annulé ou n'existe pas
+                return false; // Le billet est dï¿½jï¿½ annulï¿½ ou n'existe pas
             }
 
             // Annuler le billet
@@ -117,40 +117,40 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
         }
     }
 
-    // Méthode pour générer un code QR unique (par exemple, basé sur l'ID du billet)
+    // Mï¿½thode pour gï¿½nï¿½rer un code QR unique (par exemple, basï¿½ sur l'ID du billet)
     private String generateUniqueCode() {
-        // Implémentez une méthode pour générer un code QR unique, par exemple avec un UUID ou une concaténation d'ID
+        // Implï¿½mentez une mï¿½thode pour gï¿½nï¿½rer un code QR unique, par exemple avec un UUID ou une concatï¿½nation d'ID
         return "QR-" + System.currentTimeMillis();
     }
 
-    // Méthode pour obtenir le prix de l'événement (supposons qu'il existe une méthode dans la base de données)
+    // Mï¿½thode pour obtenir le prix de l'ï¿½vï¿½nement (supposons qu'il existe une mï¿½thode dans la base de donnï¿½es)
     private float getEventPrice(int eventId) {
-        // Implémentez la récupération du prix de l'événement à partir de la base de données
+        // Implï¿½mentez la rï¿½cupï¿½ration du prix de l'ï¿½vï¿½nement ï¿½ partir de la base de donnï¿½es
         // Exemple : 
         // return eventDAO.getEventById(eventId).getPrix();
         return 20.0f; // Exemple fixe
     }
 
-    // Méthode pour obtenir le titre de l'événement (similaire à getEventPrice)
+    // Mï¿½thode pour obtenir le titre de l'ï¿½vï¿½nement (similaire ï¿½ getEventPrice)
     private String getEventTitle(int eventId) {
-        // Implémentez la récupération du titre de l'événement
+        // Implï¿½mentez la rï¿½cupï¿½ration du titre de l'ï¿½vï¿½nement
         // Exemple : 
         // return eventDAO.getEventById(eventId).getTitre();
-        return "Exemple d'événement"; // Exemple fixe
+        return "Exemple d'ï¿½vï¿½nement"; // Exemple fixe
     }
 
-    // Méthode pour obtenir le nom du participant
+    // Mï¿½thode pour obtenir le nom du participant
     private String getParticipantName(int participantId) {
-        // Implémentez la récupération du nom du participant à partir de la base de données
+        // Implï¿½mentez la rï¿½cupï¿½ration du nom du participant ï¿½ partir de la base de donnï¿½es
         // Exemple : 
         // return userDAO.getUserById(participantId).getNom();
         return "Participant " + participantId; // Exemple fixe
     }
 
-    // Méthode pour obtenir un billet par son code QR
+    // Mï¿½thode pour obtenir un billet par son code QR
     private Billet getBilletByCode(String ticketCode) {
         try {
-            // Implémentation pour récupérer le billet à partir du code QR
+            // Implï¿½mentation pour rï¿½cupï¿½rer le billet ï¿½ partir du code QR
             for (Billet billet : billetDAO.getAllBillets()) {
                 if (billet.getCode().equals(ticketCode)) {
                     return billet;
@@ -159,6 +159,22 @@ public class TicketServiceRemote extends UnicastRemoteObject implements ITicketS
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null; // Billet non trouvé
+        return null; // Billet non trouvï¿½
     }
+
+	@Override
+	public List<String> getTicketsbyEvenement(int id_evenement) throws RemoteException {
+		// TODO Auto-generated method stub
+		List<String> list = billetDAO.getTicketsbyEvenement(id_evenement);
+		return list;
+	}
+
+	@Override
+	public boolean deleteTikectbyId(int id_billet) throws Exception {
+		// TODO Auto-generated method stub
+		boolean t=false;
+		t=billetDAO.deleteTikectbyId(id_billet);
+		return t;
+	}
+	
 }
