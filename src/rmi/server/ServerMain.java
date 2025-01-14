@@ -1,10 +1,8 @@
 package rmi.server;
 
 import rmi.impl.EventServiceRemote;
-import rmi.impl.RegistrationServiceRemote;
 import rmi.impl.TicketServiceRemote;
 import rmi.impl.UserServiceRemote;
-import rmi.impl.NotificationServiceRemote;
 import utils.DBConnection;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
@@ -21,10 +19,6 @@ public class ServerMain {
             // Obtenir une connexion à la base de données
             Connection connection = DBConnection.getConnection();
             
-            // Créer et enregistrer le service RegistrationService
-            RegistrationServiceRemote registrationService = new RegistrationServiceRemote(connection);
-            Naming.rebind("rmi://localhost:1099/RegistrationService", registrationService);
-            System.out.println("Service RMI 'RegistrationService' démarré !");
             
             // Créer et enregistrer le service EventService
             EventServiceRemote eventService = new EventServiceRemote(connection);
@@ -41,10 +35,6 @@ public class ServerMain {
             Naming.rebind("rmi://localhost:1099/TicketService", ticketService);
             System.out.println("Service RMI 'TicketService' démarré !");
             
-            // Créer et enregistrer le service NotificationService
-            NotificationServiceRemote notificationService = new NotificationServiceRemote();
-            Naming.rebind("rmi://localhost:1099/NotificationService", notificationService);
-            System.out.println("Service RMI 'NotificationService' démarré !");
 
         } catch (Exception e) {
             e.printStackTrace();
